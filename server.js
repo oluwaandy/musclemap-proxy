@@ -32,7 +32,16 @@ app.post("/generate-workout", async (req, res) => {
         messages: [
           {
             role:    "system",
-            content: "You are a beginner fitness coach. Respond ONLY with valid JSON — no markdown, no preamble."
+            content: `You are a fitness coach. Return ONLY a JSON object with exactly 4 exercises. No explanation, no markdown, just raw JSON.
+
+{"exercises":[
+  {"name":"Exercise 1","targetMuscle":"${muscle}","secondaryMuscles":["muscle1"],"sets":3,"reps":12,"tip":"tip under 12 words"},
+  {"name":"Exercise 2","targetMuscle":"${muscle}","secondaryMuscles":["muscle1"],"sets":3,"reps":10,"tip":"tip under 12 words"},
+  {"name":"Exercise 3","targetMuscle":"${muscle}","secondaryMuscles":["muscle1"],"sets":3,"reps":12,"tip":"tip under 12 words"},
+  {"name":"Exercise 4","targetMuscle":"${muscle}","secondaryMuscles":["muscle1"],"sets":3,"reps":10,"tip":"tip under 12 words"}
+]}
+
+Equipment available: ${equipment}. User name: ${nickname || "the user"}. Return ONLY the JSON, nothing else.`
           },
           {
             role:    "user",
