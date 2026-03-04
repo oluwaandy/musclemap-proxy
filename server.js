@@ -12,6 +12,13 @@ app.post("/generate-workout", async (req, res) => {
   const { muscle, equipment, nickname } = req.body;
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
+  if (!apiKey) {
+    console.error("ERROR: ANTHROPIC_API_KEY is not set");
+    return res.status(500).json({ error: "API key not configured" });
+  }
+
+  console.log("Generating workout for:", muscle, equipment);
+
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -30,10 +37,20 @@ app.post("/generate-workout", async (req, res) => {
         }],
       }),
     });
+
     const data = await response.json();
-    const raw  = data.content.map(b => b.text || "").join("");
+    console.log("Anthropic response status:", response.status);
+    console.log("Anthropic response:", JSON.stringify(data));
+
+    if (!response.ok) {
+      return res.status(500).json({ error: data.error?.message || "Anthropic API error" });
+    }
+
+    const raw = data.content.map(b => b.text || "").join("");
     res.json(JSON.parse(raw.replace(/```json|```/g, "").trim()));
+
   } catch (err) {
+    console.error("Server error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
